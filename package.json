@@ -18,6 +18,7 @@
   "dependencies": {
     "@account-abstraction/contracts": "^0.6.0",
     "@account-abstraction/sdk": "^0.6.0",
-    "@thehubbleproject/bls": "^0.5.1"
+    "@thehubbleproject/bls": "^0.5.1",
+    "bls-wasm": "^1.1.0"
   }
 }
