@@ -9,7 +9,6 @@ import { EntryPoint__factory } from '@account-abstraction/contracts'
 import * as EntryPoint from '@account-abstraction/contracts/artifacts/EntryPoint.json';
 import * as SimpleAccountFactory from '@account-abstraction/contracts/artifacts/SimpleAccountFactory.json';
 import * as SimpleAccount from '@account-abstraction/contracts/artifacts/SimpleAccount.json';
-import * as VerifyingPaymaster from '@account-abstraction/contracts/artifacts/VerifyingPaymaster.json';
 
 import config from './config.json';
 
@@ -69,15 +68,6 @@ async function deployFactory(chainConfig){
     console.log(`\tFactory address: ${chainConfig.factory.address}`);
 }
 
-async function deployPaymaster(chainConfig, adminAddress){
-    const Paymaster = await ethers.getContractFactory(VerifyingPaymaster.abi, VerifyingPaymaster.bytecode);
-    await deployContract(chainConfig.paymaster, Paymaster, async function(hash){
-        console.log(`\tDeploying Paymaster`);
-        const paymaster = await Paymaster.deploy(chainConfig.entrypoint.address, adminAddress);
-        chainConfig.paymaster = {address: paymaster.address, hash};
-    })
-    console.log(`\tPaymaster address: ${chainConfig.paymaster.address}`);
-}
 
 export async function deployAll(adminAddress) {
     const chainId = Number((await ethers.provider.getNetwork()).chainId);
@@ -87,7 +77,6 @@ export async function deployAll(adminAddress) {
     await deployBundler(chainConfig);
     await deployGreeter(chainConfig);
     await deployFactory(chainConfig);
-    await deployPaymaster(chainConfig, adminAddress);
         
     if (chainId !== HARDHAT_CHAIN){
         config[chainId] = chainConfig;

@@ -4,10 +4,8 @@ import { ethers } from "hardhat";
 
 import { SimpleAccountAPI } from '@account-abstraction/sdk'
 import * as EntryPoint from '@account-abstraction/contracts/artifacts/EntryPoint.json';
-import * as VerifyingPaymaster from '@account-abstraction/contracts/artifacts/VerifyingPaymaster.json';
 
 import { deployAll, LOCAL_CHAIN, HARDHAT_CHAIN } from "../src/Deploy";
-import { VerifyingPaymasterAPI } from "../src/VerifyingPaymasterAPI";
 
 import { HttpRpcClient, DefaultGasOverheads } from '@account-abstraction/sdk';
 
@@ -145,58 +143,6 @@ describe("ERC-4337 Account Abstraction", function () {
       expect(await greeter.greet()).to.equal(greeting);
   })
   
-  it.skip("Should test Simple Account with Paymaster", async function () {
-
-      const [deployer] = await ethers.getSigners()
-      
-      const PaymasterFactory = await ethers.getContractFactory(VerifyingPaymaster.abi, VerifyingPaymaster.bytecode);
-      const paymaster = await PaymasterFactory.attach(config.paymaster.address);
-      const paymasterApi = new VerifyingPaymasterAPI(paymaster, admin);
-      
-      const paymasterAddress = paymaster.address;
-
-      const EntryPointFactory = await ethers.getContractFactory(EntryPoint.abi, EntryPoint.bytecode);
-      const entrypoint = EntryPointFactory.attach(config.entrypoint.address);
-
-      await (await paymaster.connect(deployer).deposit({value: ethers.utils.parseEther('0.1')})).wait();
-
-      const paymasterBalance = await entrypoint.balanceOf(paymasterAddress);
-      console.log(`\tPaymaster balance: ${paymasterBalance} (${ethers.utils.formatEther(paymasterBalance)} eth)`);
-      
-      await (await paymaster.connect(deployer).addStake(21600, { value: ethers.utils.parseEther('0.1') })).wait();
-      
-      const account = new SimpleAccountAPI({
-          provider: ethers.provider,
-          entryPointAddress: config.entrypoint.address,
-          owner: admin,
-          factoryAddress: config.factory.address,
-          overheads: {zeroByte: DefaultGasOverheads.nonZeroByte},
-          paymasterAPI: paymasterApi
-      });
-
-      const target = greeter.address;
-      const greeting = "Bonjour Le Monde!";
-      const data = greeter.interface.encodeFunctionData('setGreeting', [greeting]);
-
-      const op = await account.createSignedUserOp({ target, data });
-
-      console.log("UserOperation: ", await ethers.utils.resolveProperties(op));
-            
-      const uoHash = await sendUserOp(config, op);
-      console.log(`\tUserOperation hash: ${uoHash}`);
-
-      const txHash = await account.getUserOpReceipt(uoHash);
-      console.log(`\tTransaction hash: ${txHash}`);
-
-      const tx = await ethers.provider.getTransaction(txHash);
-      const receipt = await tx.wait()
-      const gasCost = receipt.gasUsed.mul(receipt.effectiveGasPrice);
-      console.log(`\tGas cost: ${gasCost} (${ethers.utils.formatEther(gasCost)} eth)`);
-      expect(await greeter.greet()).to.equal(greeting);
-
-      await (await paymaster.connect(deployer).unlockStake()).wait();
-      await (await paymaster.connect(deployer).withdrawTo(deployer.address, await entrypoint.balanceOf(paymasterAddress))).wait();
-      
-  })
+ 
 
 });
