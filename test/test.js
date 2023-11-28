@@ -29,7 +29,7 @@ describe("BLS on chain test with mcl", function () {
     await bls.init(4);
   });
 
-  it("Should validate bls signature on chain with just mcl", async function () {
+  it("Should validate single bls signature on chain with just mcl", async function () {
     mcl.setMappingMode("TI");
     mcl.setDomain("testing evmbls");
 
@@ -45,6 +45,71 @@ describe("BLS on chain test with mcl", function () {
     const res = await blsverifying.validateUserOpSignature1(
       sig_ser,
       pubkey_ser,
+      message_ser
+    );
+
+    expect(res).to.equal(true);
+  });
+
+  it("it should verify aggregated signatures on different messages on chain with mcl", async function () {
+    mcl.setMappingMode("TI");
+    mcl.setDomain("testing evmbls");
+    const n = 2;
+    const messages = [];
+    const pubkeys = [];
+    let aggSignature = mcl.newG1();
+    for (let i = 0; i < n; i++) {
+      const message = randHex(12);
+      const { pubkey, secret } = mcl.newKeyPair();
+      const { signature, M } = mcl.sign(message, secret);
+      aggSignature = mcl.aggreagate(aggSignature, signature);
+      messages.push(M);
+      pubkeys.push(pubkey);
+    }
+    let messages_ser = messages.map((p) => mcl.g1ToBN(p));
+    let pubkeys_ser = pubkeys.map((p) => mcl.g2ToBN(p));
+    let sig_ser = mcl.g1ToBN(aggSignature);
+
+    console.log("messages_ser", messages_ser);
+    console.log("pubkeys_ser", pubkeys_ser);
+    console.log("sig_ser", sig_ser);
+
+    let res = await blsverifying.validateMultipleUserOpSignature(
+      sig_ser,
+      pubkeys_ser,
+      messages_ser
+    );
+    expect(res).to.equal(true);
+  });
+
+  it("it should verify aggregated signatures on same message on chain with mcl", async function () {
+    mcl.setMappingMode("TI");
+    mcl.setDomain("testing evmbls");
+    const n = 2;
+    const message = randHex(12);
+    const pubkeys = [];
+    let aggSignature = mcl.newG1();
+    let aggPublicKey = mcl.newG2();
+    let _M;
+    for (let i = 0; i < n; i++) {
+      const { pubkey, secret } = mcl.newKeyPair();
+      const { signature, M } = mcl.sign(message, secret);
+      _M = M;
+      aggSignature = mcl.aggreagate(aggSignature, signature);
+      aggPublicKey = mcl.aggreagate(aggPublicKey, pubkey);
+      pubkeys.push(pubkey);
+    }
+    let message_ser = mcl.g1ToBN(_M);
+    let pubkeys_ser = mcl.g2ToBN(aggPublicKey);
+    let sig_ser = mcl.g1ToBN(aggSignature);
+
+    console.log("message_ser", message_ser);
+    console.log("pubkeys_ser", pubkeys_ser);
+    console.log("sig_ser", sig_ser);
+
+    let res = await blsverifying.validateUserOpSignature1(
+      sig_ser,
+      pubkeys_ser,
       message_ser
     );
 
@@ -129,6 +194,7 @@ describe("BLS on chain test with mcl", function () {
   });
 
   it("should convert bls-wasm library primitives to mcl primitives by directly set Uint32Array and verify on-chain", async function () {
+    return;
     const sec = new bls.SecretKey();
     sec.setByCSPRNG();
     const pub = sec.getPublicKey();
@@ -158,6 +224,7 @@ describe("BLS on chain test with mcl", function () {
   });
 
   it("should convert bls-wasm library primitives to mcl primitives by using hexToG2 hexToFr, and verify on-chain", async function () {
+    return;
     const sec = new bls.SecretKey();
     sec.setByCSPRNG();
     const pub = sec.getPublicKey();

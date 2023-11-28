@@ -109,4 +109,12 @@ contract BLSVerifying {
 
         return BLSOpen.verifySingle(signature, pubkey, message);
     }
+
+    function validateMultipleUserOpSignature(
+        uint256[2] memory signature,
+        uint256[4][] memory pubkeys,
+        uint256[2][] memory messages
+    ) external view returns (bool) {
+        return BLSOpen.verifyMultiple(signature, pubkeys, messages);
+    }
 }
