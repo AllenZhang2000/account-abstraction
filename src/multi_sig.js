@@ -42,13 +42,19 @@ function sharing(n, k) {
 
 async function main() {
   await bls.init(4);
-  const k = 3;
-  const n = 5;
+  const k = 2;
+  const n = 3;
   const msg = "hello world";
 
   // Generate master public key
   // Generate n secret key shares with their corresponding id
   const { mpkHex, idVec, secVec } = sharing(n, k);
+  console.log("mpk", mpkHex, "\n");
+  for (let i = 0; i < n; i++) {
+    console.log(`user ${i}`);
+    console.log("id", idVec[i].serializeToHexStr());
+    console.log("sec", secVec[i].serializeToHexStr());
+  }
 
   // 3 participants sign the message with 3 secret key shares
   const sig1 = secVec[0].sign(msg);
@@ -58,7 +64,7 @@ async function main() {
 
   // Recover the signature from the 3 partial signatures
   const sigA = recoverSig(subIdVec, [sig1, sig2, sig3]);
-  console.log("sig", sigA);
+  console.log("\nsig", sigA);
 
   // Verify the signature with the master public key
   const pub = new bls.PublicKey();
