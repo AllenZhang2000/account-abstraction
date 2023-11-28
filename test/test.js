@@ -70,9 +70,9 @@ describe("BLS on chain test with mcl", function () {
     let pubkeys_ser = pubkeys.map((p) => mcl.g2ToBN(p));
     let sig_ser = mcl.g1ToBN(aggSignature);
 
-    console.log("messages_ser", messages_ser);
-    console.log("pubkeys_ser", pubkeys_ser);
-    console.log("sig_ser", sig_ser);
+    // console.log("messages_ser", messages_ser);
+    // console.log("pubkeys_ser", pubkeys_ser);
+    // console.log("sig_ser", sig_ser);
 
     let res = await blsverifying.validateMultipleUserOpSignature(
       sig_ser,
@@ -103,9 +103,9 @@ describe("BLS on chain test with mcl", function () {
     let pubkeys_ser = mcl.g2ToBN(aggPublicKey);
     let sig_ser = mcl.g1ToBN(aggSignature);
 
-    console.log("message_ser", message_ser);
-    console.log("pubkeys_ser", pubkeys_ser);
-    console.log("sig_ser", sig_ser);
+    // console.log("message_ser", message_ser);
+    // console.log("pubkeys_ser", pubkeys_ser);
+    // console.log("sig_ser", sig_ser);
 
     let res = await blsverifying.validateUserOpSignature1(
       sig_ser,
