@@ -7,6 +7,7 @@ import { DeterministicDeployer } from "@account-abstraction/sdk";
 import { EntryPoint__factory } from "@account-abstraction/contracts";
 
 import config from "./config_BLS.json";
+import * as SimpleAccountFactory from "@account-abstraction/contracts/artifacts/SimpleAccountFactory.json";
 
 export const HARDHAT_CHAIN = 31337;
 export const LOCAL_CHAIN = 1337;
@@ -107,6 +108,24 @@ async function deployFactory(chainConfig) {
       chainConfig.entrypoint.address,
       chainConfig.aggregator.address
     );
+    // const salt = ethers.utils.id("Some unique string or number");
+    // const aPublicKey = [
+    //   ethers.BigNumber.from(
+    //     "1234567890123456789012345678901234567890123456789012345678901234"
+    //   ),
+    //   ethers.BigNumber.from(
+    //     "2345678901234567890123456789012345678901234567890123456789012345"
+    //   ),
+    //   ethers.BigNumber.from(
+    //     "3456789012345678901234567890123456789012345678901234567890123456"
+    //   ),
+    //   ethers.BigNumber.from(
+    //     "4567890123456789012345678901234567890123456789012345678901234567"
+    //   ),
+    // ];
+
+    // const address = await factory.getAddress(salt, aPublicKey);
+    // console.log(`\tAccount address: ${address}`);
     chainConfig.factory = { address: factory.address, hash };
   });
   console.log(`\tFactory address: ${chainConfig.factory.address}`);
