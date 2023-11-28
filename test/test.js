@@ -1,13 +1,13 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const bls = require("bls-wasm");
-const mcl = require("../src/mcl.js");
-const { randHex } = require("../src/utils.js");
-const { recoverSig, sharing } = require("../src/multi_sig.js");
+const mcl = require("../src/bls/mcl.js");
+const { randHex } = require("../src/bls/utils.js");
+const { recoverSig, sharing } = require("../src/bls/multi_sig.js");
 
-describe("BLSSignatureAggregator", function () {
+describe("BLS on chain test with mcl", function () {
   let blsOpen;
-  let aggregator;
+  let blsverifying;
 
   // before all tests
   before(async function () {
@@ -15,17 +15,14 @@ describe("BLSSignatureAggregator", function () {
     const BLSOpen = await ethers.getContractFactory("BLSOpen");
     blsOpen = await BLSOpen.deploy();
     console.log("blsOpen", blsOpen.address);
-    const BLSSignatureAggregator = await ethers.getContractFactory(
-      "BLSSignatureAggregator",
-      {
-        libraries: {
-          BLSOpen: blsOpen.address,
-        },
-      }
-    );
+    const BLSVerifying = await ethers.getContractFactory("BLSVerifying", {
+      libraries: {
+        BLSOpen: blsOpen.address,
+      },
+    });
 
-    aggregator = await BLSSignatureAggregator.deploy();
-    console.log("aggregator", aggregator.address);
+    blsverifying = await BLSVerifying.deploy();
+    console.log("aggregator", blsverifying.address);
 
     await mcl.init();
 
@@ -45,7 +42,7 @@ describe("BLSSignatureAggregator", function () {
     let pubkey_ser = mcl.g2ToBN(pubkey);
     let sig_ser = mcl.g1ToBN(signature);
 
-    const res = await aggregator.validateUserOpSignature1(
+    const res = await blsverifying.validateUserOpSignature1(
       sig_ser,
       pubkey_ser,
       message_ser
@@ -77,7 +74,7 @@ describe("BLSSignatureAggregator", function () {
     );
     const sigBytes = ethers.utils.concat(sig_ser.map(ethers.utils.arrayify));
 
-    const res = await aggregator.validateUserOpSignature2(
+    const res = await blsverifying.validateUserOpSignature2(
       sigBytes,
       pubkeyBytes,
       messageBytes
@@ -151,7 +148,7 @@ describe("BLSSignatureAggregator", function () {
     let pubkey_ser = mcl.g2ToBN(pubkey);
     let sig_ser = mcl.g1ToBN(signature);
 
-    const res = await aggregator.validateUserOpSignature1(
+    const res = await blsverifying.validateUserOpSignature1(
       sig_ser,
       pubkey_ser,
       message_ser
@@ -176,7 +173,7 @@ describe("BLSSignatureAggregator", function () {
     let pubkey_ser = mcl.g2ToBN(pubkey);
     let sig_ser = mcl.g1ToBN(signature);
 
-    const res = await aggregator.validateUserOpSignature1(
+    const res = await blsverifying.validateUserOpSignature1(
       sig_ser,
       pubkey_ser,
       message_ser
