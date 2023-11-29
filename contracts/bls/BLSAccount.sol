@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.12;
 
-import '@account-abstraction/contracts/samples/SimpleAccount.sol';
-import "./IBLSAccount.sol";
+import "../SimpleAccount.sol";
+import "@account-abstraction/contracts/samples/bls/IBLSAccount.sol";
 
 /**
  * Minimal BLS-based account that uses an aggregated signature.

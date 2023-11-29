@@ -2,14 +2,12 @@
 pragma solidity >=0.8.4 <0.9.0;
 pragma abicoder v2;
 
-import '@account-abstraction/contracts/interfaces/IAggregator.sol';
-import '@account-abstraction/contracts/interfaces/IEntryPoint.sol';
-
-import '@account-abstraction/contracts/interfaces/UserOperationLib.sol';
-
+import "@account-abstraction/contracts/interfaces/IAggregator.sol";
+import "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
+import "@account-abstraction/contracts/interfaces/UserOperation.sol";
 import {BLSOpen} from  "./lib/BLSOpen.sol";
-import "./IBLSAccount.sol";
-import "./BLSHelper.sol";
+import "@account-abstraction/contracts/samples/bls/IBLSAccount.sol";
+import "@account-abstraction/contracts/samples/bls/BLSHelper.sol";
 
 /**
  * A BLS-based signature aggregator, to validate aggregated signature of multiple UserOps if BLSAccount
