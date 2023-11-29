@@ -33,7 +33,8 @@ describe("BLS on chain test with mcl", function () {
     mcl.setMappingMode("TI");
     mcl.setDomain("testing evmbls");
 
-    const message = randHex(12);
+    const message = randHex(24);
+    console.log("message", message);
     const { pubkey, secret } = mcl.newKeyPair();
 
     const { signature, M } = mcl.sign(message, secret);
@@ -86,7 +87,8 @@ describe("BLS on chain test with mcl", function () {
     mcl.setMappingMode("TI");
     mcl.setDomain("testing evmbls");
     const n = 2;
-    const message = randHex(12);
+    const message = randHex(32);
+    console.log("message", message, message.length);
     const pubkeys = [];
     let aggSignature = mcl.newG1();
     let aggPublicKey = mcl.newG2();
@@ -102,6 +104,18 @@ describe("BLS on chain test with mcl", function () {
     let message_ser = mcl.g1ToBN(_M);
     let pubkeys_ser = mcl.g2ToBN(aggPublicKey);
     let sig_ser = mcl.g1ToBN(aggSignature);
+
+    const messageBytes = ethers.utils.concat(
+      message_ser.map(ethers.utils.arrayify)
+    );
+    console.log("messageBytes", messageBytes);
+    const hexString = Array.prototype.map
+      .call(messageBytes, (x) => ("00" + x.toString(16)).slice(-2))
+      .join("");
+
+    const hashedHexString = ethers.utils.keccak256("0x" + hexString);
+
+    console.log("message", hashedHexString);
 
     // console.log("message_ser", message_ser);
     // console.log("pubkeys_ser", pubkeys_ser);
