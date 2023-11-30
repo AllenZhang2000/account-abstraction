@@ -1,70 +1,63 @@
-## Hardhat Setup (no bundler)
 
-Run the tests
+
+# Project overview:
+This project attempts to test various BLS libraries to achieve BLS signature and BLS Threshold on-chain. 
+
+Create a `.env` file with the following under root: 
+
+```
+ALCHEMY_API_KEY=
+METAMASK_PRIVATE_KEY=
+ETHERSCAN_API_KEY=
+```
+
+- ## `/Contracts` Structure 
+  - ### Directory Structure
+    - **Contracts**: All smart contracts are located in the `/contracts` directory.
+    - **BLS Library**: The BLS (Boneh-Lynn-Shacham) cryptographic library is situated in `/contracts/lib`. This library provides essential functionalities for BLS signature verification.
+
+  - ### BLSVerifying.sol
+    - This smart contract, named `BLSVerifying.sol`, is primarily used for testing BLS signature verification. It is located within the `/contracts` directory.
+    - The contract utilizes the `BLSOpen.verifySingle` function from the BLS library in `/contracts/lib`. This function is crucial for verifying BLS signatures.
+    - The contract includes three distinct tests for BLS verification: `validateUserOpSignature1`, `validateUserOpSignature2`, and `validateUserOpSignature3`.
+    - Each of these tests is designed to check the functionality and reliability of BLS signature verification against various input types. This ensures the robustness and accuracy of the BLS implementation in different scenarios.
+- ## `/Src` Structure
+  - ### Create a `.env` file with the following under `/src`:
+        ```
+        ALCHEMY_API_KEY=
+        ```
+  - ### `DeployBLS.ts` and `config_BLS.json`
+    - These two files attempt to deploy BLS account abstraction, **ignore them for the scope of this project**
+  - ### `/bls`
+    - Files inside this folder used `mcl-wasm` library to do BLS signature
+  - ### `multi_sig.js`
+    - This file verifies the ability to do BLS threshold signature off-chain with `bls-wasm` library
+    - Run it using `node multi_sig.js`
+- ## `bls-frontend` Structure
+  - `npm install`
+  - `npm run`
+- ## `scripts` structure
+  - deploy `BLSVerifying.sol` with `npx hardhat run scripts/deploy.js --network sepolia`
+
+
+
+
+
+
+## Sepolia
+
+1. 
+
+2. Create a `.env` file with the following under `/src`:
+
+```
+ALCHEMY_API_KEY=
+```
+
+3. Run the tests
 
 ```
 npm install
 npx hardhat test
 ```
 
-## Local GETH node setup + bundler
-
-1. Run a local GETH node (Docker container)
-
-```
-docker run --rm -ti --name geth -p 8545:8545 ethereum/client-go:v1.10.26 \
-  --miner.gaslimit 12000000 \
-  --http --http.api personal,eth,net,web3,debug \
-  --http.vhosts '*,localhost,host.docker.internal' --http.addr "0.0.0.0" \
-  --ignore-legacy-receipts --allow-insecure-unlock --rpc.allow-unprotected-txs \
-  --dev \
-  --verbosity 2 \
-  --nodiscover --maxpeers 0 --mine --miner.threads 1 \
-  --networkid 1337
-```
-
-2. clone the eth-infinistism bundler
-
-```
-git clone https://github.com/eth-infinitism/bundler
-cd bundler
-yarn && yarn preprocess
-```
-
-3. Deploy contracts (entrypoint, ...) on the GETH node
-
-```
-yarn hardhat-deploy --network localhost
-```
-
-4. Run the bundler
-
-```
-yarn run bundler
-```
-
-5. Run the tests
-
-```
-npm install
-npx hardhat test --network localhost
-```
-
-## Sepolia
-
-1. Create an `.env` file with the following: 
-
-```
-METAMASK_PRIVATE_KEY=
-ALCHEMY_API_KEY=
-ETHERSCAN_API_KEY=
-```
-
-Make sure that you have at least 1 SepETH on your metamask private key. 
-
-2.  Run the tests
-
-```
-npm install
-npx hardhat test --network sepolia
-```
