@@ -3,13 +3,14 @@
 # Project overview:
 This project attempts to test various BLS libraries to achieve BLS signature and BLS Threshold on-chain. 
 
-Create a `.env` file with the following under root: 
+1. Create a `.env` file with the following under root: 
 
 ```
 ALCHEMY_API_KEY=
 METAMASK_PRIVATE_KEY=
 ETHERSCAN_API_KEY=
 ```
+2. `npm install`
 
 - ## `/Contracts` Structure 
   - ### Directory Structure
@@ -33,31 +34,15 @@ ETHERSCAN_API_KEY=
   - ### `multi_sig.js`
     - This file verifies the ability to do BLS threshold signature off-chain with `bls-wasm` library
     - Run it using `node multi_sig.js`
+  - ### `index.js`
+    - Backend for bls-frontend, run with `node index.js`
 - ## `bls-frontend` Structure
   - `npm install`
   - `npm run`
 - ## `scripts` structure
   - deploy `BLSVerifying.sol` with `npx hardhat run scripts/deploy.js --network sepolia`
-
-
-
-
-
-
-## Sepolia
-
-1. 
-
-2. Create a `.env` file with the following under `/src`:
-
-```
-ALCHEMY_API_KEY=
-```
-
-3. Run the tests
-
-```
-npm install
-npx hardhat test
-```
+- ## `test` structure
+  - ### `test.js` contains the main BLS tests, some of it will fail to show the limitation of certain BLS Library
+  - ### `testBLS.js` tests deploy BLS account abstraction, **ignore it for the scope of this project**
+  - ### run test with `npx hardhat test`
 
