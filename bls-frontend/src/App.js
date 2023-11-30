@@ -114,7 +114,7 @@ function App() {
       console.log("signature", signature, signature.length);
       console.log("publicKey", publicKey, publicKey.length);
       console.log("message", message, message.length);
-      const result = await contract.verifyAndGreet(
+      const result = await contract.validateUserOpSignature2(
         signature,
         publicKey,
         message
