@@ -109,8 +109,6 @@ function App() {
       signer
     );
     try {
-      const res = await contract.BLS_DOMAIN();
-      console.log("res", res);
       console.log("signature", signature, signature.length);
       console.log("publicKey", publicKey, publicKey.length);
       console.log("message", message, message.length);

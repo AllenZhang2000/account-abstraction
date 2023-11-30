@@ -23,7 +23,7 @@ describe("BLS on chain test with mcl", function () {
     });
 
     blsverifying = await BLSVerifying.deploy();
-    console.log("aggregator", blsverifying.address);
+    console.log("blsverifying", blsverifying.address);
 
     await mcl.init();
 
@@ -35,7 +35,6 @@ describe("BLS on chain test with mcl", function () {
     mcl.setDomain("testing evmbls");
 
     const message = randHex(24);
-    console.log("message", message);
     const { pubkey, secret } = mcl.newKeyPair();
 
     const { signature, M } = mcl.sign(message, secret);
@@ -92,7 +91,6 @@ describe("BLS on chain test with mcl", function () {
     // console.log("message", message, message.length);
     const message =
       "0x97a0d6211d614eaa637b56ab3c75c965ab2c07f148ddbfb55a193e3168b16b6d";
-    console.log("message", message, message.length);
     const pubkeys = [];
     let aggSignature = mcl.newG1();
     let aggPublicKey = mcl.newG2();
@@ -156,20 +154,6 @@ describe("BLS on chain test with mcl", function () {
     let pubkey_ser = mcl.g2ToBN(pubkey);
     let sig_ser = mcl.g1ToBN(signature);
 
-    // const messageBytes = ethers.utils.concat(
-    //   message_ser.map(ethers.utils.arrayify)
-    // );
-    // const pubkeyBytes = ethers.utils.concat(
-    //   pubkey_ser.map(ethers.utils.arrayify)
-    // );
-    // const sigBytes = ethers.utils.concat(sig_ser.map(ethers.utils.arrayify));
-
-    // const res = await blsverifying.validateUserOpSignature2(
-    //   sigBytes,
-    //   pubkeyBytes,
-    //   messageBytes
-    // );
-
     const messageBytes =
       "0x" + message_ser.map((bn) => bn.toHexString().slice(2)).join("");
     const pubkeyBytes =
@@ -177,27 +161,12 @@ describe("BLS on chain test with mcl", function () {
     const sigBytes =
       "0x" + sig_ser.map((bn) => bn.toHexString().slice(2)).join("");
 
-    // console.log("messageBytes", messageBytes, messageBytes.length);
-    // console.log("pubkeyBytes", pubkeyBytes, pubkeyBytes.length);
-    // console.log("sigBytes", sigBytes, sigBytes.length);
-
-    const domainStr = ethers.utils.keccak256(
-      ethers.utils.toUtf8Bytes("eip4337.bls.domain")
-    );
-
     const res = await blsverifying.validateUserOpSignature2(
       sigBytes,
       pubkeyBytes,
       messageBytes
     );
     expect(res).to.equal(true);
-
-    const a = await blsverifying.verifyAndGreet(
-      sigBytes,
-      pubkeyBytes,
-      messageBytes
-    );
-    console.log("a", a);
   });
 
   it("Should validate bls signature on chain using validateUserOpSignature3", async function () {
@@ -248,7 +217,6 @@ describe("BLS on chain test with mcl", function () {
   });
 
   it("Should validate normal signing and multi-sig in bls-wasm off-chain", async function () {
-    return;
     // should be 21888242871839275222246405745257275088696311157297823662689037894645226208583
     console.log("bls feild order", bls.getFieldOrder());
 
@@ -294,13 +262,12 @@ describe("BLS on chain test with mcl", function () {
   });
 
   it("should convert bls-wasm library primitives to mcl primitives by directly set Uint32Array and verify on-chain", async function () {
-    return;
     const sec = new bls.SecretKey();
     sec.setByCSPRNG();
     const pub = sec.getPublicKey();
 
-    console.log("pub", pub.a_);
-    console.log("sec", sec.a_);
+    // console.log("pub", pub.a_);
+    // console.log("sec", sec.a_);
 
     // convert to mcl primitives by directly set Uint32Array
     const { pubkey, secret } = mcl.newKeyPair();
@@ -324,7 +291,6 @@ describe("BLS on chain test with mcl", function () {
   });
 
   it("should convert bls-wasm library primitives to mcl primitives by using hexToG2 hexToFr, and verify on-chain", async function () {
-    return;
     const sec = new bls.SecretKey();
     sec.setByCSPRNG();
     const pub = sec.getPublicKey();
