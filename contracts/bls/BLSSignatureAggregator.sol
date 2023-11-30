@@ -5,10 +5,8 @@ pragma abicoder v2;
 import "@account-abstraction/contracts/interfaces/IAggregator.sol";
 import "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
 
-
 import "@account-abstraction/contracts/interfaces/UserOperation.sol";
 import {calldataKeccak} from "@account-abstraction/contracts/core/Helpers.sol";
-
 
 import {BLSOpen} from "./lib/BLSOpen.sol";
 import "./IBLSAccount.sol";

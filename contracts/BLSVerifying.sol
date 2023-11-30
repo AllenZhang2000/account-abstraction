@@ -60,33 +60,6 @@ contract BLSVerifying {
         return keccak256(abi.encode(publicKey));
     }
 
-    function pubkeyToUncompresed(
-        uint256[2] memory compressed,
-        uint256[2] memory y
-    ) internal pure returns (uint256[4] memory uncompressed) {
-        uint256 desicion = compressed[0] & SIGN_MASK;
-        require(
-            desicion == ODD_NUM || y[0] & 1 != 1,
-            "BLS: bad y coordinate for uncompressing key"
-        );
-        uncompressed[0] = compressed[0] & FIELD_MASK;
-        uncompressed[1] = compressed[1];
-        uncompressed[2] = y[0];
-        uncompressed[3] = y[1];
-    }
-
-    function signatureToUncompresed(
-        uint256 compressed,
-        uint256 y
-    ) internal pure returns (uint256[2] memory uncompressed) {
-        uint256 desicion = compressed & SIGN_MASK;
-        require(
-            desicion == ODD_NUM || y & 1 != 1,
-            "BLS: bad y coordinate for uncompressing key"
-        );
-        return [compressed & FIELD_MASK, y];
-    }
-
     function validateUserOpSignature1(
         uint256[2] calldata signature,
         uint256[4] calldata pubkey,
@@ -108,6 +81,73 @@ contract BLSVerifying {
         console.log("signature: %s", signature[1]);
 
         return BLSOpen.verifySingle(signature, pubkey, message);
+    }
+
+    function bytesToBytes32(bytes memory _data) public pure returns (bytes32) {
+        require(_data.length <= 32, "Data cannot be longer than 32 bytes");
+        bytes32 result;
+        assembly {
+            result := mload(add(_data, 32))
+        }
+        return result;
+    }
+
+    function compareBytes(
+        bytes memory a,
+        bytes memory b
+    ) public pure returns (bool) {
+        if (a.length != b.length) {
+            return false;
+        }
+
+        for (uint i = 0; i < a.length; i++) {
+            if (a[i] != b[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function validateUserOpSignature3(
+        bytes calldata _signature,
+        bytes calldata _pubkey,
+        bytes calldata _message,
+        bytes calldata _messageHash,
+        bytes calldata _domain
+    ) external view returns (bool) {
+        uint256[2] memory signature = abi.decode(_signature, (uint256[2]));
+        uint256[4] memory pubkey = abi.decode(_pubkey, (uint256[4]));
+        uint256[2] memory message = BLSOpen.hashToPoint(BLS_DOMAIN, _message);
+        uint256[2] memory messageHash = abi.decode(_messageHash, (uint256[2]));
+
+        if (
+            compareBytes(
+                abi.encodePacked(BLSOpen.hashToPoint(BLS_DOMAIN, _message)),
+                abi.encodePacked(
+                    BLSOpen.hashToPoint(bytesToBytes32(_domain), _message)
+                )
+            )
+        ) console.log("equal");
+        else console.log("not equal");
+
+        console.log("messgaHash 0: %s", messageHash[0]);
+        console.log("message 0: %s", message[0]);
+        console.log("messgaHash 1: %s", messageHash[1]);
+        console.log("message 1: %s", message[1]);
+
+        bool first = BLSOpen.verifySingle(signature, pubkey, message);
+        bool second = BLSOpen.verifySingle(signature, pubkey, messageHash);
+        console.log("first: %s", first);
+        console.log("second: %s", second);
+        return first && second;
+    }
+
+    function hashToPoint(
+        bytes memory domain,
+        bytes memory message
+    ) public view returns (uint256[2] memory) {
+        return BLSOpen.hashToPoint(bytesToBytes32(domain), message);
     }
 
     function validateMultipleUserOpSignature(

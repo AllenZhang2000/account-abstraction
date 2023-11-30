@@ -15,10 +15,12 @@ async function init() {
 
 function setDomain(domain) {
   DOMAIN = Uint8Array.from(Buffer.from(domain, "utf8"));
+  console.log("domain", DOMAIN);
 }
 
 function setDomainHex(domain) {
   DOMAIN = Uint8Array.from(Buffer.from(domain, "hex"));
+  console.log("domain", DOMAIN);
 }
 
 function setMappingMode(mode) {

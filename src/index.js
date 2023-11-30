@@ -1,7 +1,10 @@
 const express = require("express");
 const cors = require("cors");
+const ethers = require("ethers");
 const mcl = require("./bls/mcl.js");
-const { randHex } = require("./bls/utils.js");
+const domainStr = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes("eip4337.bls.domain")
+);
 
 const app = express();
 app.use(cors());
@@ -9,7 +12,7 @@ app.use(cors());
 const init = async () => {
   await mcl.init();
   mcl.setMappingMode("TI");
-  mcl.setDomain("testing evmbls");
+  mcl.setDomain(domainStr);
 };
 
 init().then(() => console.log("mcl initialized"));

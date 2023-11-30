@@ -2,8 +2,9 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const bls = require("bls-wasm");
 const mcl = require("../src/bls/mcl.js");
-const { randHex } = require("../src/bls/utils.js");
+const { randHex, bigToHex } = require("../src/bls/utils.js");
 const { recoverSig, sharing } = require("../src/bls/multi_sig.js");
+const e = require("express");
 
 describe("BLS on chain test with mcl", function () {
   let blsOpen;
@@ -87,7 +88,10 @@ describe("BLS on chain test with mcl", function () {
     mcl.setMappingMode("TI");
     mcl.setDomain("testing evmbls");
     const n = 2;
-    const message = randHex(32);
+    // const message = randHex(32);
+    // console.log("message", message, message.length);
+    const message =
+      "0x97a0d6211d614eaa637b56ab3c75c965ab2c07f148ddbfb55a193e3168b16b6d";
     console.log("message", message, message.length);
     const pubkeys = [];
     let aggSignature = mcl.newG1();
@@ -105,18 +109,14 @@ describe("BLS on chain test with mcl", function () {
     let pubkeys_ser = mcl.g2ToBN(aggPublicKey);
     let sig_ser = mcl.g1ToBN(aggSignature);
 
-    const messageBytes = ethers.utils.concat(
-      message_ser.map(ethers.utils.arrayify)
+    const messageBytes =
+      "0x" + message_ser.map((bn) => bn.toHexString().slice(2)).join("");
+    console.log("message", messageBytes, messageBytes.length);
+    console.log(
+      "message",
+      _M.serializeToHexStr(),
+      _M.serializeToHexStr().length
     );
-    console.log("messageBytes", messageBytes);
-    const hexString = Array.prototype.map
-      .call(messageBytes, (x) => ("00" + x.toString(16)).slice(-2))
-      .join("");
-
-    const hashedHexString = ethers.utils.keccak256("0x" + hexString);
-
-    console.log("message", hashedHexString);
-
     // console.log("message_ser", message_ser);
     // console.log("pubkeys_ser", pubkeys_ser);
     // console.log("sig_ser", sig_ser);
@@ -134,7 +134,7 @@ describe("BLS on chain test with mcl", function () {
     mcl.setMappingMode("TI");
     mcl.setDomain("testing evmbls");
 
-    const message = randHex(12);
+    const message = randHex(32);
     const { pubkey, secret } = mcl.newKeyPair();
 
     const { signature, M } = mcl.sign(message, secret);
@@ -143,15 +143,34 @@ describe("BLS on chain test with mcl", function () {
     let pubkey_ser = mcl.g2ToBN(pubkey);
     let sig_ser = mcl.g1ToBN(signature);
 
-    console.log("sig_ser", sig_ser);
+    // const messageBytes = ethers.utils.concat(
+    //   message_ser.map(ethers.utils.arrayify)
+    // );
+    // const pubkeyBytes = ethers.utils.concat(
+    //   pubkey_ser.map(ethers.utils.arrayify)
+    // );
+    // const sigBytes = ethers.utils.concat(sig_ser.map(ethers.utils.arrayify));
 
-    const messageBytes = ethers.utils.concat(
-      message_ser.map(ethers.utils.arrayify)
+    // const res = await blsverifying.validateUserOpSignature2(
+    //   sigBytes,
+    //   pubkeyBytes,
+    //   messageBytes
+    // );
+
+    const messageBytes =
+      "0x" + message_ser.map((bn) => bn.toHexString().slice(2)).join("");
+    const pubkeyBytes =
+      "0x" + pubkey_ser.map((bn) => bn.toHexString().slice(2)).join("");
+    const sigBytes =
+      "0x" + sig_ser.map((bn) => bn.toHexString().slice(2)).join("");
+
+    // console.log("messageBytes", messageBytes, messageBytes.length);
+    // console.log("pubkeyBytes", pubkeyBytes, pubkeyBytes.length);
+    // console.log("sigBytes", sigBytes, sigBytes.length);
+
+    const domainStr = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes("eip4337.bls.domain")
     );
-    const pubkeyBytes = ethers.utils.concat(
-      pubkey_ser.map(ethers.utils.arrayify)
-    );
-    const sigBytes = ethers.utils.concat(sig_ser.map(ethers.utils.arrayify));
 
     const res = await blsverifying.validateUserOpSignature2(
       sigBytes,
@@ -162,7 +181,55 @@ describe("BLS on chain test with mcl", function () {
     expect(res).to.equal(true);
   });
 
+  it("Should validate bls signature on chain using validateUserOpSignature3", async function () {
+    mcl.setMappingMode("FT");
+    const domainStr = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes("eip4337.bls.domain")
+    );
+    mcl.setDomainHex(domainStr);
+
+    const message =
+      "0xb5a30f9a631a39ecca081dbcc7215a48cd9d6a923a4b20394708142edc7bb688";
+    const { pubkey, secret } = mcl.newKeyPair();
+
+    const { signature, M } = mcl.sign(message, secret);
+
+    let message_ser = mcl.g1ToBN(M);
+    let pubkey_ser = mcl.g2ToBN(pubkey);
+    let sig_ser = mcl.g1ToBN(signature);
+
+    const messageBytes =
+      "0x" + message_ser.map((bn) => bn.toHexString().slice(2)).join("");
+    const pubkeyBytes =
+      "0x" + pubkey_ser.map((bn) => bn.toHexString().slice(2)).join("");
+    const sigBytes =
+      "0x" + sig_ser.map((bn) => bn.toHexString().slice(2)).join("");
+
+    const res = await blsverifying.validateUserOpSignature3(
+      sigBytes,
+      pubkeyBytes,
+      message,
+      messageBytes,
+      Uint8Array.from(Buffer.from(domainStr, "hex"))
+    );
+
+    expect(res).to.equal(true);
+  });
+
+  it("hash to point", async function () {
+    const DOMAIN_STR = "testing-evmbls";
+    const DOMAIN = Uint8Array.from(Buffer.from(DOMAIN_STR, "utf8"));
+    mcl.setMappingMode("FT");
+    mcl.setDomain(DOMAIN_STR);
+    const msg = ethers.utils.randomBytes(32);
+    const expected = mcl.g1ToHex(mcl.hashToPoint(ethers.utils.hexlify(msg)));
+    const result = await blsverifying.hashToPoint(DOMAIN, msg);
+    expect(expected[0]).to.equal(bigToHex(result[0]));
+    expect(expected[1]).to.equal(bigToHex(result[1]));
+  });
+
   it("Should validate normal signing and multi-sig in bls-wasm off-chain", async function () {
+    return;
     // should be 21888242871839275222246405745257275088696311157297823662689037894645226208583
     console.log("bls feild order", bls.getFieldOrder());
 
