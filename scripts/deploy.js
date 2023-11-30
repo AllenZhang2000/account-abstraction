@@ -11,7 +11,7 @@ async function main() {
   });
 
   const blsverifying = await BLSVerifying.deploy();
-  console.log("aggregator", blsverifying.address);
+  console.log("verifyer", blsverifying.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
