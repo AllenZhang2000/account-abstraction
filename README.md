@@ -1,7 +1,7 @@
 
 
 # Project overview:
-This project attempts to test various BLS libraries to achieve BLS signature and BLS Threshold on-chain. 
+This project aims to assess the capability of various BLS libraries in enabling BLS signatures and BLS Threshold cryptography directly on the blockchain.
 
 1. Create a `.env` file with the following under root: 
 
