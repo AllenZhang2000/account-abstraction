@@ -13,6 +13,8 @@ import "hardhat/console.sol";
 contract BLSVerifying {
     bytes32 public constant BLS_DOMAIN = keccak256("eip4337.bls.domain");
 
+    string public constant greet = "Hello, world!";
+
     //copied from BLS.sol
     uint256 public constant N =
         21888242871839275222246405745257275088696311157297823662689037894645226208583;
@@ -156,5 +158,18 @@ contract BLSVerifying {
         uint256[2][] memory messages
     ) external view returns (bool) {
         return BLSOpen.verifyMultiple(signature, pubkeys, messages);
+    }
+
+    function verifyAndGreet(
+        bytes calldata _signature,
+        bytes calldata _pubkey,
+        bytes calldata _message
+    ) external view returns (string memory) {
+        uint256[2] memory signature = abi.decode(_signature, (uint256[2]));
+        uint256[4] memory pubkey = abi.decode(_pubkey, (uint256[4]));
+        uint256[2] memory message = abi.decode(_message, (uint256[2]));
+
+        if (BLSOpen.verifySingle(signature, pubkey, message)) return greet;
+        else return "no greet";
     }
 }

@@ -109,22 +109,35 @@ describe("BLS on chain test with mcl", function () {
     let pubkeys_ser = mcl.g2ToBN(aggPublicKey);
     let sig_ser = mcl.g1ToBN(aggSignature);
 
-    const messageBytes =
-      "0x" + message_ser.map((bn) => bn.toHexString().slice(2)).join("");
-    console.log("message", messageBytes, messageBytes.length);
-    console.log(
-      "message",
-      _M.serializeToHexStr(),
-      _M.serializeToHexStr().length
-    );
+    // const messageBytes =
+    //   "0x" + message_ser.map((bn) => bn.toHexString().slice(2)).join("");
+    // console.log("message", messageBytes, messageBytes.length);
+    // console.log(
+    //   "message",
+    //   _M.serializeToHexStr(),
+    //   _M.serializeToHexStr().length
+    // );
     // console.log("message_ser", message_ser);
     // console.log("pubkeys_ser", pubkeys_ser);
     // console.log("sig_ser", sig_ser);
+
+    const messageBytes =
+      "0x" + message_ser.map((bn) => bn.toHexString().slice(2)).join("");
+    const pubkeyBytes =
+      "0x" + pubkeys_ser.map((bn) => bn.toHexString().slice(2)).join("");
+    const sigBytes =
+      "0x" + sig_ser.map((bn) => bn.toHexString().slice(2)).join("");
 
     let res = await blsverifying.validateUserOpSignature1(
       sig_ser,
       pubkeys_ser,
       message_ser
+    );
+
+    res = await blsverifying.validateUserOpSignature2(
+      sigBytes,
+      pubkeyBytes,
+      messageBytes
     );
 
     expect(res).to.equal(true);
@@ -177,8 +190,14 @@ describe("BLS on chain test with mcl", function () {
       pubkeyBytes,
       messageBytes
     );
-
     expect(res).to.equal(true);
+
+    const a = await blsverifying.verifyAndGreet(
+      sigBytes,
+      pubkeyBytes,
+      messageBytes
+    );
+    console.log("a", a);
   });
 
   it("Should validate bls signature on chain using validateUserOpSignature3", async function () {
