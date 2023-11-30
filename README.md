@@ -41,9 +41,11 @@ ETHERSCAN_API_KEY=
 - ## `scripts` structure
   - deploy `BLSVerifying.sol` with `npx hardhat run scripts/deploy.js --network sepolia`
 - ## `test` structure
-  - ### `test.js` contains the main BLS tests, some of it will fail to show the limitation of certain BLS Library
-  - ### `testBLS.js` tests deploy BLS account abstraction, **ignore it for the scope of this project**
-  - ### run test with `npx hardhat test`
+  - ### `test.js`
+    - contains the main BLS tests, some of it will fail to show the limitation of certain BLS Library
+  - ### `testBLS.js`
+    - tests deploy BLS account abstraction, **ignore it for the scope of this project**
+  - ## run test with `npx hardhat test`
  
 # Project Results and future work
 ## To do single BLS signature verification & aggregated BLS signature verification on chain, you need:
