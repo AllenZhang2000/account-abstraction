@@ -62,9 +62,9 @@ ETHERSCAN_API_KEY=
 
 Make sure that you have at least 1 SepETH on your metamask private key. 
 
-2.  Run the tests
+2.  Run the script
 
 ```
 npm install
-npx hardhat test --network sepolia
+npx hardhat run --network sepolia scripts/deploy.ts
 ```
