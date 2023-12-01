@@ -19,7 +19,7 @@ ETHERSCAN_API_KEY=
   - ### BLSVerifying.sol
     - This smart contract, named `BLSVerifying.sol`, is primarily used for testing BLS signature verification. It is located within the `/contracts` directory.
     - The contract utilizes the `BLSOpen.verifySingle` and `BLSOpen.verifyMultiple` functions from the BLS library in `/contracts/lib`. This function is crucial for verifying BLS signatures.
-    - The contract includes three distinct tests for BLS verification: `validateUserOpSignature1`, `validateUserOpSignature2`, and `validateUserOpSignature3`.
+    - The contract includes four distinct tests for BLS verification: `validateUserOpSignature1`, `validateUserOpSignature2`, `validateUserOpSignature3`, and `validateMultipleUserOpSignature`
     - Each of these tests is designed to check the functionality and reliability of BLS signature verification against various input types. This ensures the robustness and accuracy of the BLS implementation in different scenarios.
 - ## `/Src` Structure
   - ### Create a `.env` file with the following under `/src`:
