@@ -25,11 +25,14 @@
     "bundler": {
       "url": "https://public.stackup.sh/api/v1/node/ethereum-sepolia"
     },
+    "greeter": {
+      "address": "0xa80444e497D5B943cB2e412A51082D9b16120126"
+    },
     "aggregator": {
-      "address": "0x3e138858Da9E91d7CB3B6D070e5eA2E18cdD69BA"
+      "address": "0x55fe6ab7F015eb067179C1acaeE73C26AdCD2700"
     },
     "factory": {
-      "address": "0x5FD9846c47fFFe7Cd0A22C31d4F431F01230F3b2"
+      "address": "0x3eE8C49b179dC6E05D1EB5b1EB3A6d8c28780823"
     },
     "paymaster": {}
   }
